@@ -45,8 +45,10 @@ public class SelectorTest {
       s.range(a, 2, 4);
       
       int [] e = {3};
+      
+      Assert.assertArrayEquals("RangeTest", s.range(a, 2, 4), e);
    
-x      
+     
    }
    
 }
