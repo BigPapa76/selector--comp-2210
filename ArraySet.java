@@ -62,6 +62,9 @@ public class ArraySet<T extends Comparable<? super T>> implements Set<T> {
    public boolean isEmpty() {
       return size == 0;
    }
+   
+   private boolean isFull() {
+      return size == elements.length;
 
    ///////////////////////////////////////
    // DO NOT CHANGE THE TOSTRING METHOD //
@@ -96,7 +99,28 @@ public class ArraySet<T extends Comparable<? super T>> implements Set<T> {
     */
    @Override
    public boolean add(T element) {
-      return false;
+   
+   if (this.contains(element)) {
+   return false;
+   }
+   
+   if(isFull()) {
+   resize(size * 2);
+   }
+   int index = 0;
+   while(i <size && elements.compareTo(elements[i]) >0) {
+   i++;
+   }
+   
+   
+   for (int j - size; j > i; j--]
+   {
+   elements[j] = elements[j-1];
+   }
+   elements[i] = element;
+   size++;
+   return true;
+      
    }
 
    /**
