@@ -35,6 +35,12 @@ public class ArraySet<T extends Comparable<? super T>> implements Set<T> {
       elements = (T[]) new Comparable[1];
       size = 0;
    }
+   
+   private ArraySet() {
+    
+      this.elements = elements;
+      this.size = size;
+   }
 
    ///////////////////////////////////
    // DO NOT CHANGE THE SIZE METHOD //
@@ -242,15 +248,15 @@ public class ArraySet<T extends Comparable<? super T>> implements Set<T> {
       if(s.size() != size) {
          return false;
       }
-      Iterator<T> itr = s.iterator();
-   
-      for (int i = 0; i < size; i++) {
-         if (!s.equals(this)) {
+      
+      T[] sElements = s.elements;
+      T[] myElements = this.elements;
+      
+      for (int i = 0; i < this.size(); i++) {
+         if (sElements[i] != myElements[i]) {
             return false;
          }
-      
       }
-   
       return true;
    }
 
@@ -285,20 +291,56 @@ public class ArraySet<T extends Comparable<? super T>> implements Set<T> {
     */
    public Set<T> union(ArraySet<T> s) {
    
-      ArraySet<T> a = new ArraySet<T>();
-   
-      Iterator<T> itr = this.iterator();
-      while(itr.hasNext()) {
-         a.add(itr.next());
+      //ArraySet<T> a = new ArraySet<T>();
+      
+      T[] sElements = s.elements;
+      T[] myElements = this.elements;
+      T[] union = (T[]) new Object[s.size + this.size];
+      int i = 0;
+      int j = 0;
+      int unionSize = 0;
+      
+      while (i < s.size() && j < this.size()) {
+      
+      
+         if (sElements[i] == myElements[j]) {
+            union[unionSize] = sElements[i];
+            i++;
+            j++;
+         }
+         
+         else if (sElements[i].compareTo(myElements[j]) < 0) {
+         
+         
+            union[unionSize] = sElements[i];
+            i++;
+         }
+         
+         else {
+         
+            union[unionSize] = myElements[j];
+            j++;
+         }
+      
+         unionSize++;
+      
       }
       
-      Iterator<T> i = s.iterator();
-      while(i.hasNext()) {
-         a.add(i.next());
+      while (i < s.size) {
+      
+         union[unionSize] = sElements[i];
+         i++;
       }
+      
+      while (j < this.size) {
+         union[unionSize] = myElements[j];
+         j++;
+      
+      }   
+      
+      ArraySet<T> a = new ArraySet<T> (union,unionSize);
+   
       return a;
-   
-      
    }
 
 
