@@ -65,6 +65,7 @@ public class ArraySet<T extends Comparable<? super T>> implements Set<T> {
    
    private boolean isFull() {
       return size == elements.length;
+   }
 
    ///////////////////////////////////////
    // DO NOT CHANGE THE TOSTRING METHOD //
@@ -100,26 +101,26 @@ public class ArraySet<T extends Comparable<? super T>> implements Set<T> {
    @Override
    public boolean add(T element) {
    
-   if (this.contains(element)) {
-   return false;
-   }
+      if (this.contains(element)) {
+         return false;
+      }
    
-   if(isFull()) {
-   resize(size * 2);
-   }
-   int index = 0;
-   while(i <size && elements.compareTo(elements[i]) >0) {
-   i++;
-   }
+      if(isFull()) {
+         resize(size * 2);
+      }
    
+      int i = 0;
+      while(i < size && element.compareTo(elements[i]) > 0) {
+         i++;
+      }
    
-   for (int j - size; j > i; j--]
-   {
-   elements[j] = elements[j-1];
-   }
-   elements[i] = element;
-   size++;
-   return true;
+      for (int j = size; j > i; j--)
+      {
+         elements[j] = elements[j - 1];
+      }
+      elements[i] = element;
+      size++;
+      return true;
       
    }
 
@@ -132,9 +133,42 @@ public class ArraySet<T extends Comparable<? super T>> implements Set<T> {
     * @param   element  The element to be removed.
     * @return  true if collection is changed, false otherwise.
     */
+    
+   private boolean isSparse() {
+      return (size > 0) && (size < elements.length / 4);
+   }
+   private int locate(T element) {
+      for (int i = 0; i < size; i++) {
+         if (elements[i].equals(element)) {
+            return i;
+         }
+      }
+      return -1;
+   }
+
+   
+
    @Override
    public boolean remove(T element) {
-      return false;
+      if (!this.contains(element)) {
+         return false;
+      }
+   
+      if(isSparse()) {
+         resize(size / 2);
+      }
+      
+      int index = this.locate(element);
+   
+      for (int j = (index + 1); j < size; j++)
+      {
+         elements[j - 1] = elements[j];
+         
+      }
+      elements[size] = null;
+      size--;
+      return true;
+      
    }
 
    /**
@@ -147,11 +181,22 @@ public class ArraySet<T extends Comparable<? super T>> implements Set<T> {
     */
    @Override
    public boolean contains(T element) {
-   
-      for (T target : elements) {
-         if (target.equals(element)) {
+      int min = 0;
+      int max = size;
+      while(min > max) {
+      
+         int mid = (min + max) / 2;
+      
+         if (elements[mid].equals(element)) {
             return true;
          }
+         
+         else if (element.compareTo(elements[mid]) < 0) {
+            max = mid - 1;
+         }
+         else {
+            min = mid + 1;
+         }  
       }
       return false;
    }
@@ -166,7 +211,22 @@ public class ArraySet<T extends Comparable<? super T>> implements Set<T> {
     */
    @Override
    public boolean equals(Set<T> s) {
-      return false;
+   
+      if (s.size() != size) {
+         return false;
+      }
+   
+      Iterator<T> itr = s.iterator();
+   
+      while (itr.hasNext()) {
+         T element = itr.next();
+         if (!this.contains(element)) {
+         
+            return false;
+         }
+      }
+      return true;
+      
    }
 
    /**
@@ -178,7 +238,20 @@ public class ArraySet<T extends Comparable<? super T>> implements Set<T> {
     *               as the parameter set, false otherwise
     */
    public boolean equals(ArraySet<T> s) {
-      return false;
+   
+      if(s.size() != size) {
+         return false;
+      }
+      Iterator<T> itr = s.iterator();
+   
+      for (int i = 0; i < size; i++) {
+         if (!s.equals(this)) {
+            return false;
+         }
+      
+      }
+   
+      return true;
    }
 
    /**
@@ -189,7 +262,19 @@ public class ArraySet<T extends Comparable<? super T>> implements Set<T> {
     */
    @Override
    public Set<T> union(Set<T> s) {
-      return null;
+   
+      ArraySet<T> a = new ArraySet<T>();
+   
+      Iterator<T> itr = this.iterator();
+      while(itr.hasNext()) {
+         a.add(itr.next());
+      }
+      
+      Iterator<T> i = s.iterator();
+      while(i.hasNext()) {
+         a.add(i.next());
+      }
+      return a;
    }
 
    /**
@@ -199,7 +284,21 @@ public class ArraySet<T extends Comparable<? super T>> implements Set<T> {
     *            the parameter set
     */
    public Set<T> union(ArraySet<T> s) {
-      return null;
+   
+      ArraySet<T> a = new ArraySet<T>();
+   
+      Iterator<T> itr = this.iterator();
+      while(itr.hasNext()) {
+         a.add(itr.next());
+      }
+      
+      Iterator<T> i = s.iterator();
+      while(i.hasNext()) {
+         a.add(i.next());
+      }
+      return a;
+   
+      
    }
 
 
@@ -223,7 +322,18 @@ public class ArraySet<T extends Comparable<? super T>> implements Set<T> {
     *            this set and the parameter set
     */
    public Set<T> intersection(ArraySet<T> s) {
-      return null;
+   
+      ArraySet<T> as = new ArraySet<T>();
+   
+      for (T val : elements) {
+      
+         if (s.contains(val)) {
+         
+            as.add(val);
+         }
+      }
+      
+      return as;
    }
 
    /**
@@ -246,8 +356,22 @@ public class ArraySet<T extends Comparable<? super T>> implements Set<T> {
     *            set but not the parameter set
     */
    public Set<T> complement(ArraySet<T> s) {
-      return null;
+   
+      ArraySet<T> as = new ArraySet<T>();
+   
+      for (T val : s) {
+      
+         if (!this.contains(val)) {
+         
+            as.add(val);
+         }
+      }
+      
+      return as;
    }
+
+    
+   
 
 
    /**
